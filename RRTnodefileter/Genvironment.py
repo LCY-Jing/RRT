@@ -33,7 +33,6 @@ def plot_environment(env, bounds=None, figsize=None):
 
     plt.xlim([minx, maxx])
     plt.ylim([miny, maxy])
-    plt.tick_params(labelsize=16)                # 设置坐标刻度字体为13号
     ax.set_aspect('equal', adjustable='box')
     return ax
 

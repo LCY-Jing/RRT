@@ -33,14 +33,13 @@ def plot_environment(env, bounds=None, figsize=None):
 
     plt.xlim([minx, maxx])
     plt.ylim([miny, maxy])
-    plt.tick_params(labelsize=16)                # 设置坐标刻度字体为13号
     ax.set_aspect('equal', adjustable='box')
     return ax
 
 # 画随机树 gray是灰色
 def plot_line(ax, line):
     x, y = line.xy
-    ax.plot(x, y, color='gray', linewidth=1, solid_capstyle='butt', zorder=1)
+    plt.plot(x, y, color='gray', linewidth=1, solid_capstyle='butt', zorder=1)
 
 
 def plot_poly(ax, poly, color, alpha=1.0, zorder=1):

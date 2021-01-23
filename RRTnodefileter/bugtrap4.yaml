@@ -1,0 +1,42 @@
+#配置文件
+
+#environment = Environment('bugtrap4.yaml')
+#bounds = (0, 0, 10,10)
+#start_pose = (0.2, 0.2)
+#goal_region = Polygon([(9.5,9.5), (9.5,10.0), (10.0,10.0), (10.0,9.5)])
+
+
+environment:
+  obstacles:
+    obstacle0000:
+      corners:
+      - [1.5, 0.0]
+      - [1.9, 0.0]
+      - [1.9, 8.0]
+      - [1.5, 8.0]
+      - [1.5, 0.0]
+      shape: polygon
+    obstacle0001:
+      corners:
+      - [ 3.6, 2.0 ]
+      - [ 4.0, 2.0 ]
+      - [ 4.0, 10.0 ]
+      - [ 3.6, 10.0 ]
+      - [ 3.6, 2.0 ]
+      shape: polygon
+    obstacle0002:
+      corners:
+      - [ 5.8, 0.0 ]
+      - [ 6.2, 0.0 ]
+      - [ 6.2, 8.0 ]
+      - [ 5.8, 8.0 ]
+      - [ 5.8, 0.0 ]
+      shape: polygon
+    obstacle0003:
+      corners:
+      - [ 8.0, 2.0 ]
+      - [ 8.4, 2.0 ]
+      - [ 8.4, 10.0 ]
+      - [ 8.0, 10.0 ]
+      - [ 8.0, 2.0 ]
+      shape: polygon
