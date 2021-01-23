@@ -8,9 +8,9 @@ from NewRRT.LeeDrawer import draw_results
 
 from shapely.geometry import LineString, Point
 
-from NewRRT import InverseSequence
+#from NewRRT import InverseSequence
 from NewRRT.LeeHalton import LeeHalton
-from sobol_seq import sobol_seq
+# from sobol_seq import sobol_seq
 
 
 class LeeRRTPlanner():

@@ -164,7 +164,7 @@ class RRTPlanner():
             if i >= self.N-1:
                 self.runForFullIterations == True
             rand_num =  random.random()   # 使用随机数
-            # rand_num =float(self.data[i][4])
+            # rand_num =float(self.data[i][5])
             """
             加入目标偏置策略
             """
@@ -350,10 +350,10 @@ class RRTPlanner():
         for i in range(self.num_randpoint):
             while True:
                 rand_i = rand_i + 1
-                # x = self.minx + float(data[rand_i][1+i*2]) * (self.maxx - self.minx)
-                # y = self.miny + float(data[rand_i][2+i*2]) * (self.maxy - self.miny)
-                x = self.minx + random.random() * (self.maxx - self.minx)
-                y = self.miny + random.random() * (self.maxy - self.miny)
+                x = self.minx + float(data[rand_i][1+i*2]) * (self.maxx - self.minx)
+                y = self.miny + float(data[rand_i][2+i*2]) * (self.maxy - self.miny)
+                # x = self.minx + random.random() * (self.maxx - self.minx)
+                # y = self.miny + random.random() * (self.maxy - self.miny)
                 pointtem = [x,y]
                 buffered_point = Point(pointtem).buffer(self.obj_radius, self.resolution)  # obj_radius 半径
                 if self.isPointCollisionFree(buffered_point):
