@@ -47,8 +47,8 @@ def draw_results(algo_name, path, V, E, env, bounds, object_radius, resolution, 
     for i in list(path_o[:,4]):
         obstacle_num = obstacle_num + i
     # Create title with descriptive information based on environment, path length, and elapsed_time
-    #title = algo_name + "\n" + str(graph_size) + " Nodes. " + str(len(env.obstacles)) + " Obstacles. Path Size: " + str(path_size) + "\n Path Length: " + str([path_length1,path_length2]) + "\n Runtime(s)= " + str(elapsed_time) + " num_i="+ str(num_i)
-    title = str(graph_size) + " Nodes. "+str(obstacle_num) + " Times. "
+    #title = algo_name + "\n" + str(graph_size) + " Nodes. " + str(len(env.obstacles)) + " Obstacles. Path Size: " + str(path_size) + "\n Path Length: " + str([path_length1,path_length2]) + "\n Runtime(s)= " + str(elapsed_time) + " num_i="+ str(num_i)+str(graph_size) + " Nodes. "+str(obstacle_num) + " Times. "
+    title = "\n Runtime(s):" + str(elapsed_time) + "\n Path Length: "+str(path_length1) +" Nodes: "+str(graph_size) +" Times. "+str(obstacle_num)+" num_i:"+ str(num_i)
     # title = str(obstacle_num) + " Times. "
 
     #title = ("Biased RRT")
@@ -69,7 +69,7 @@ def draw_results(algo_name, path, V, E, env, bounds, object_radius, resolution, 
     for edge in E:
         line = LineString([edge[0], edge[1]])    # egde0代表的是近节点，edge1代表的应该是新节点
         plot_line(env_plot, line)                # LineString的意思是将坐标点变成一维的一个个数
-        plt.pause(0.001)
+        # plt.pause(0.001)
     # Plot path
     plot_path(env_plot, originalPath, object_radius,'red')       # 原始曲线用黑色表示
     # plot_path(env_plot, pruningPath, object_radius,'red')          # 减枝后的曲线用红色表示
@@ -77,7 +77,7 @@ def draw_results(algo_name, path, V, E, env, bounds, object_radius, resolution, 
 
     plot_scatter(env_plot, path_pcn)
 
-    plt.show()
+    # plt.show()
 
 
 

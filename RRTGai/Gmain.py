@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 import math
 
 
-environment = Environment('Gbugtrap.yaml')     # 导入数据
+environment = Environment('Gbugtrap1.yaml')     # 导入数据
 bounds = (0, 0, 10,10)                      # 图的边界
 start_pose = (1, 1)                         #起始点
 # start_pose = (-1, 2)

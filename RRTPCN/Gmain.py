@@ -23,16 +23,18 @@ object_radius = 0.2                                       # 对象半径,比如�
 steer_distance = 0.3                                     # 步长
 num_iterations = 100000                                     # 迭代次数
 resolution = 3
-rand_fre = 0.5                                       # 目标偏向概率阈值rand_fre是偏向目标的概率
-num_randpoint = 8                                        # 备选节点池中的点
+rand_fre = 0.3                                       # 目标偏向概率阈值rand_fre是偏向目标的概率
+num_randpoint = 10                                       # 备选节点池中的点
 angel_min = math.pi*1/2                                   # 设置夹角的最小值，现在的问题是如果小于这个值而贸然的去增加节点并不一定能缓和角度。所以这个增加点的坐标要自己去选定
 angel_min = 0
-node_k = 0.5                                                   #节点过滤中的K值用于衡量
+node_k = 0                                                  #节点过滤中的K值用于衡量
 pcn = float('inf')                                               # 节点评价pcn阈值
 # pcn = 20
 drawResults = True
 runForFullIterations = False
 
+
+Experiment_N=2                   #实验次数
 
 # 读取csv文件Dev数据
 data = []
@@ -45,8 +47,9 @@ with open('sobol.csv', encoding="utf-8") as f:
     #     data.append(line)
 
 
-sbpp = RRTPlanner()           # 继承RRTPlann 类
-path= sbpp.RRT(environment, bounds, start_pose, goal_region, object_radius, steer_distance, num_iterations,
-               resolution, drawResults, runForFullIterations,rand_fre,num_randpoint,angel_min,data,node_k,pcn) # 产生路径
-# plt.show()                   # 显示路径图
+    sbpp = RRTPlanner()           # 继承RRTPlann 类
+for i in range(Experiment_N):
+    path= sbpp.RRT(environment, bounds, start_pose, goal_region, object_radius, steer_distance, num_iterations,
+                   resolution, drawResults, runForFullIterations,rand_fre,num_randpoint,angel_min,data,node_k,pcn) # 产生路径
+plt.show()                   # 显示路径图
 

@@ -165,10 +165,34 @@ class RRTPlanner():
             rand_num =  random.random()   # 使用随机数
             # rand_num =float(self.data[i][4])
             """
-            加入目标偏置策略
+            加入目标偏置策略   这里有问题没改，好像没执行目标偏置策略
             """
             if rand_num < self.rand_free:            # 若是随机数小于目标偏向概率
                 random_point = self.goal_pose
+                nearest_pointtem = self.find_nearest_point(random_point)
+                nearest_point = nearest_pointtem[1]
+                new_point = self.steer(nearest_point, random_point)
+                tem = nearest_pointtem
+                if self.nodefileter(new_point, nearest_point, self.V):
+                    self.VPCN[tem[0]] = (tem[0], nearest_point, tem[2], tem[3] + 1, tem[4])  # 通过更新列表的元组来更新父节点的子节点数加1
+                    if self.isEdgeCollisionFree(nearest_point, new_point):
+                        self.pcn_i = self.pcn_i + 1
+                        self.V.append(new_point)  # V中表示加入new_point点
+                        self.VPCN.append((self.pcn_i, new_point, 0, 0, 0))  # 节点的状态初始值设为0
+                        self.E.append((nearest_point, new_point))  # E中包含邻近点和新点，就是图中所显示的所有点
+                        self.setParent(nearest_point, new_point)  # 设置父节点,nearest_point是new_point的父节点
+                        # 更新父节点状态和节点的子节点数
+                        self.VPCN[tem[0]] = (tem[0], nearest_point, tem[2] - 1 / (self.VPCN[tem[0]][3] + 2), self.VPCN[tem[0]][3], tem[4])
+                    else:  # 发生碰撞的情况
+                        self.VPCN[tem[0]] = (tem[0], nearest_point, self.VPCN[tem[0]][2],
+                                             self.VPCN[tem[0]][3], self.VPCN[tem[0]][4] + 1)
+                        # if tem[2] == 0:
+                        #     self.VPCN[tem[0]] = (tem[0], nearest_point, self.VPCN[tem[0]][2]+0.5,
+                        #                          self.VPCN[tem[0]][3],self.VPCN[tem[0]][4])
+                        # else:
+                        self.VPCN[tem[0]] = (tem[0], nearest_point, self.VPCN[tem[0]][2] + 1 / (self.VPCN[tem[0]][3] + 1),self.VPCN[tem[0]][3], self.VPCN[tem[0]][4])
+
+
             else:
                 random_point1 = self.get_collision_free_random_point()       #收集采样池中随机采样点点
                 # The new point to be added to the tree is not the sampled point, but a colinear point with it and the nearest point in the tree.
@@ -228,21 +252,21 @@ class RRTPlanner():
 
 
 
-                if self.isAtGoalRegion(new_point):
-                    if not self.runForFullIterations:  # If not running for full iterations, terminate as soon as a path is found.
-                        path, tree_size, path_size, path_length = self.find_path(self.start_pose,
-                                                                                 new_point)  # findpath应该就是将新增的节点都放到path中，
-                        break
+            if self.isAtGoalRegion(new_point):
+                if not self.runForFullIterations:  # If not running for full iterations, terminate as soon as a path is found.
+                    path, tree_size, path_size, path_length = self.find_path(self.start_pose,
+                                                                             new_point)  # findpath应该就是将新增的节点都放到path中，
+                    break
 
-                    # 基本不会执行else里的语句
-                    else:  # If running for full iterations, we return the shortest path found.
-                        tmp_path, tmp_tree_size, tmp_path_size, tmp_path_length = self.find_path(
-                            self.start_pose, new_point)
-                        if tmp_path_length < path_length:
-                            path_length = tmp_path_length
-                            path = tmp_path
-                            tree_size = tmp_tree_size
-                            path_size = tmp_path_size
+                # 基本不会执行else里的语句
+                else:  # If running for full iterations, we return the shortest path found.
+                    tmp_path, tmp_tree_size, tmp_path_size, tmp_path_length = self.find_path(
+                        self.start_pose, new_point)
+                    if tmp_path_length < path_length:
+                        path_length = tmp_path_length
+                        path = tmp_path
+                        tree_size = tmp_tree_size
+                        path_size = tmp_path_size
 
 
                 # random_tem = int(random.uniform(0,self.num_randpoint))
@@ -386,10 +410,10 @@ class RRTPlanner():
         for i in range(self.num_randpoint):
             # while True:
             rand_i = rand_i + 1
-            # x = self.minx + float(data[rand_i][1+i*2]) * (self.maxx - self.minx)
-            # y = self.miny + float(data[rand_i][2+i*2]) * (self.maxy - self.miny)
-            x = self.minx + random.random() * (self.maxx - self.minx)
-            y = self.miny + random.random() * (self.maxy - self.miny)
+            x = self.minx + float(data[rand_i][1+i*2]) * (self.maxx - self.minx)
+            y = self.miny + float(data[rand_i][2+i*2]) * (self.maxy - self.miny)
+            # x = self.minx + random.random() * (self.maxx - self.minx)
+            # y = self.miny + random.random() * (self.maxy - self.miny)
             pointtem = [x,y]
 
             # x = self.minx + random.random() * (self.maxx - self.minx)
@@ -434,12 +458,12 @@ class RRTPlanner():
         closest_point = None
         min_dist = float('inf')
         for vertex in self.VPCN:                                        # self.v包含所有产生的随机点
-            # if float(vertex[2])>self.pcn:               #说明碰撞次数太多取消该节点作为父节点这里的一会改成可设置的pcn值
-            if vertex[3]==0:
-                PCN =1
-            else:
-                PCN = vertex[4]/vertex[3]                     # 节点碰撞概率碰撞子节点数/总的子节点数
-            if float(vertex[2])>PCN:
+            if float(vertex[2])>self.pcn:               #说明碰撞次数太多取消该节点作为父节点这里的一会改成可设置的pcn值
+            # if vertex[3]==0:
+            #     PCN =1
+            # else:
+            #     PCN = vertex[4]/vertex[3]                     # 节点碰撞概率碰撞子节点数/总的子节点数
+            # if float(vertex[2])>PCN:
                 continue
             else:
                 euc_dist = self.euclidian_dist(random_point, vertex[1])     # 计算两点之间的距离，选取与random_point最近的V中的点

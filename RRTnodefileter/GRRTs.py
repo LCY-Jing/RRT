@@ -164,6 +164,7 @@ class RRTPlanner():
         for i in range(self.N):       # N是迭代次数
             if i >= self.N-1:
                 self.runForFullIterations == True
+
             rand_num =  random.random()   # 使用随机数
             # rand_num =float(self.data[i][4])
             """
@@ -171,6 +172,15 @@ class RRTPlanner():
             """
             if rand_num < self.rand_free:            # 若是随机数小于目标偏向概率
                 random_point = self.goal_pose
+                nearest_point = self.find_nearest_point(random_point)
+                new_point = self.steer(nearest_point, random_point)  # 新点，newpoint又与最近点相关，像是RRT*，这里就把新点选出来了
+                # 如果说最近点与采样点连线之间没有障碍物，就把新点加入到树枝了。且需要满足节点过滤机制即任何节点与新节点的距离都不能大于步长的k倍
+                if self.nodefileter(new_point, nearest_point, self.V) & self.isEdgeCollisionFree(nearest_point,
+                                                                                                 new_point):
+                    self.V.add(new_point)  # V中表示加入new_point点
+                    self.E.add((nearest_point, new_point))  # E中包含邻近点和新点，就是图中所显示的所有点
+                    self.setParent(nearest_point, new_point)  # 设置父节点,nearest_point是new_point的父节点
+
             else:
                 random_point1 = self.get_collision_free_random_point()       #收集随机点，这里是随机过程
                 # The new point to be added to the tree is not the sampled point, but a colinear point with it and the nearest point in the tree.
@@ -206,21 +216,21 @@ class RRTPlanner():
 
                         break
 
-                if self.isAtGoalRegion(new_point):
-                    if not self.runForFullIterations:  # If not running for full iterations, terminate as soon as a path is found.
-                        path, tree_size, path_size, path_length = self.find_path(self.start_pose,
-                                                                                 new_point)  # findpath应该就是将新增的节点都放到path中，
-                        break
+            if self.isAtGoalRegion(new_point):
+                if not self.runForFullIterations:  # If not running for full iterations, terminate as soon as a path is found.
+                    path, tree_size, path_size, path_length = self.find_path(self.start_pose,
+                                                                             new_point)  # findpath应该就是将新增的节点都放到path中，
+                    break
 
-                    # 基本不会执行else里的语句
-                    else:  # If running for full iterations, we return the shortest path found.
-                        tmp_path, tmp_tree_size, tmp_path_size, tmp_path_length = self.find_path(
-                            self.start_pose, new_point)
-                        if tmp_path_length < path_length:
-                            path_length = tmp_path_length
-                            path = tmp_path
-                            tree_size = tmp_tree_size
-                            path_size = tmp_path_size
+                # 基本不会执行else里的语句
+                else:  # If running for full iterations, we return the shortest path found.
+                    tmp_path, tmp_tree_size, tmp_path_size, tmp_path_length = self.find_path(
+                        self.start_pose, new_point)
+                    if tmp_path_length < path_length:
+                        path_length = tmp_path_length
+                        path = tmp_path
+                        tree_size = tmp_tree_size
+                        path_size = tmp_path_size
 
 
                 # random_tem = int(random.uniform(0,self.num_randpoint))
@@ -229,7 +239,7 @@ class RRTPlanner():
 
 
 
-        num_i = i+1        # 计算算法迭代次数
+            num_i = i+1        # 计算算法迭代次数
 
 
         uniPruningPath,uniPruningPathAngel=self.uniPruningAndAngel(path)      # 这里是剪枝操作
